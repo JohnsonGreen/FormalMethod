@@ -1,3 +1,7 @@
+"""
+本分析器是基于spark-parser来实现的， 链接：http://pages.cpsc.ucalgary.ca/~aycock/spark/
+"""
+
 from spark_parser import GenericParser, GenericASTTraversal
 from spark_parser import AST
 from spark_parser.scanner import GenericScanner, GenericToken
@@ -56,24 +60,26 @@ class ExprParser(GenericParser):
     def __init__(self, start='expr'):
         GenericParser.__init__(self, start)
 
+    # 加减规则
     def p_expr_add_term(self, args):
-        ' expr ::= expr ADD_OP expr '
+        """ expr ::= expr ADD_OP expr """
         op = 'add' if args[1].attr == '+' else 'subtract'
         return AST(op, [args[0], args[2]])
 
+    # 乘除规则
     def p_term_mult_factor(self, args):
-        ' expr ::= expr MULT_OP expr '
+        """ expr ::= expr MULT_OP expr """
         op = 'multiply' if args[1].attr == '*' else 'divide'
         return AST(op, [args[0], args[2]])
 
     # 从expr到整数
     def p_expr2integer(self, args):
-        ' expr ::= INTEGER '
+        """ expr ::= INTEGER """
         return AST('single', [args[0]])
 
     # 从表达式推导到加括号的表达式
     def p_expr2paren(self, args):
-        'expr ::= LPAREN expr RPAREN'
+        """ expr ::= LPAREN expr RPAREN """
         return AST('single', [args[1]])
 
 
